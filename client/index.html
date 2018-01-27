@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+	<script type="text/babel">  
+        "use strict";
+    
+        let canvas;
+        let ctx;
+        //our websocket connection
+        let socket;
+
+        const init = () => {
+            canvas = document.querySelector("#canvas");
+            ctx = canvas.getContext("2d");
+        };
+
+      window.onload = init;
+    </script>
+</head>
+<body>
+    <canvas id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
+</body>
+</html>
