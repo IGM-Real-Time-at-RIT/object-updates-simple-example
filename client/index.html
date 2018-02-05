@@ -9,11 +9,94 @@
         let canvas;
         let ctx;
         //our websocket connection
-        let socket;
+        let socket; 
+
+        /**Our square object to draw to the screen
+           This holds all of the parameters of our square and will
+           be synced from the server. When server updates come in
+           we will update this object **/
+        let square = {
+            /**last time this was updated so that we don't override
+               it with a later time. We would have to add logic to
+               this code to not update if the new square packet is
+               older than our last received one **/
+            lastUpdate: new Date().getTime(),
+            x: 0, //x position of our square
+            y: 0, //y position of our square
+            height: 100, //height of our square
+            width: 100 //width of our square
+        };
+        
+        /**an automated function to generate messages to send to the 
+           server. Normally something like this would be invoked by 
+           user input such as clicking with the mouse, clicking a 
+           button, using WASD, etc **/
+        const updatePosition = () => {
+            /** our request message to update the square's position 
+                by 10 and 5 pixels. The variables in this message 
+                "xUpdate" and "yUpdate". We know this because we 
+                know the server is accepting an xUpdate and yUpdate
+                in its "movementUpdate" message listener. The names
+                have to match on client and server for this to work
+                correctly. **/
+            const message = {
+                xUpdate: 10,
+                yUpdate: 5
+            }
+            
+            //emit a movementUpdate message to the server and send 
+            //our request data
+            socket.emit('movementUpdate', message);
+        };
+        
+        //redraw our square to the screen
+        const redraw = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            //draw our updated square
+            ctx.fillRect(square.x, square.y, square.width, square.height);
+        };
+        
+        /**when a message is received from the server
+           update our square to match the server's response **/
+        const update = (data) => {
+            /**We know from the server that data is actually the server's
+               master square object. This is where you would add the logic
+               to check if the last updated time on the server message is
+               older than our current object. If it's older than our current
+               object, then we would want to avoid updating our
+               square's parameters with the message we received.
+            **/
+            square = data;
+            
+            //redraw new data to the screen
+            redraw();
+        };
 
         const init = () => {
             canvas = document.querySelector("#canvas");
             ctx = canvas.getContext("2d");
+        
+            /**Connect to our server. The io variable is added automatically 
+               by socket.io when embedding it in the HTTP app on the server side
+               This will return a new websocket connection. Every call to 
+               io.connect will return a new websocket connection BUT not 
+               necessarily close the existing one. You can absolutely use 
+               multiple websockets on the client, but you have to manage which 
+               ones are listening to which messages. In cases like this, you
+               only need one. **/
+            socket = io.connect();
+            
+            //When the socket connects successfully
+            socket.on('connect', function () {
+                /**start our automated messages to the server every second. 
+                   This is just to show communication. Again, normally this 
+                   would be invoked by a user action, not automated **/
+                setInterval(updatePosition, 1000);
+            });      
+            
+            //When our socket receives 'updatedMovement' messages from the 
+            //server, call our update function
+            socket.on('updatedMovement', update);
         };
 
       window.onload = init;

@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "A simple application for updating object properties through websockets",
   "main": "./src/app.js",
+  "engines": {
+    "node": "6.5.0",
+    "npm": "3.10.3"
+  },
   "scripts": {
     "start": "node ./src/app.js",
     "pretest": "eslint ./src --fix",
@@ -14,8 +18,8 @@
     "socket.io": "^1.4.8"
   },
   "devDependencies": {
-    "eslint": "^3.0.0",
-    "eslint-config-airbnb": "^9.0.1",
-    "eslint-plugin-import": "^1.10.1"
+    "eslint": "^3.8.0",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^1.16.0"
   }
 }
